@@ -4,12 +4,13 @@ import com.aircall.alertnotification.config.PropertiesConfig
 import com.aircall.alertnotification.model.alert.TimerEvent
 import com.aircall.alertnotification.service.EscalationPolicyService
 import com.aircall.alertnotification.service.TimerService
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import kotlin.collections.HashMap
 
 @Service
 class TimerServiceImpl(var propertiesConfig: PropertiesConfig) : TimerService {
 
+    private val logger = LoggerFactory.getLogger(TimerServiceImpl::class.java)
     val timerList : MutableMap<String, TimerEvent> = HashMap()
 
     override fun removeTimer(serviceName: String) {
@@ -22,7 +23,7 @@ class TimerServiceImpl(var propertiesConfig: PropertiesConfig) : TimerService {
                     escalationPolicyService = escalationPolicyService, message = message)
             timerEvent.scheduleTimer(propertiesConfig.targetLevelInterval)
             timerList[serviceName] = timerEvent
-            println("TimerTask $message started")
+            logger.info("TimerTask $message started")
         }
     }
 

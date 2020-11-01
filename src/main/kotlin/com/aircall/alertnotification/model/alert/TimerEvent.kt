@@ -2,12 +2,14 @@ package com.aircall.alertnotification.model.alert
 
 import com.aircall.alertnotification.service.EscalationPolicyService
 import com.aircall.alertnotification.service.TimerService
+import org.slf4j.LoggerFactory
 import java.util.*
 
 class TimerEvent {
 
+    private val logger = LoggerFactory.getLogger(MonitoredServiceTimer::class.java)
     private val timer: Timer = Timer(true)
-    val monitoredServiceTimer : MonitoredServiceTimer
+    private val monitoredServiceTimer : MonitoredServiceTimer
 
     constructor(serviceName: String, message: String,
                  escalationPolicyService: EscalationPolicyService,
@@ -25,23 +27,23 @@ class TimerEvent {
 
     fun cancel() {
         timer.cancel()
+        logger.info("TimerTask ${monitoredServiceTimer.serviceName} canceled")
     }
 
     fun isFinished() = monitoredServiceTimer.finished
 
-    class MonitoredServiceTimer(private val serviceName: String, private val message: String,
-                                 private val escalationPolicyService: EscalationPolicyService,
-                                 private val timerService: TimerService) : TimerTask() {
-
+    class MonitoredServiceTimer(val serviceName: String, private val message: String,
+                                private val escalationPolicyService: EscalationPolicyService,
+                                private val timerService: TimerService) : TimerTask() {
+        private val logger = LoggerFactory.getLogger(MonitoredServiceTimer::class.java)
         var finished: Boolean = false
 
         override fun run() {
             timerService.removeTimer(serviceName)
-            escalationPolicyService.incrementMonitoredService(serviceName)
             cancel()
             escalationPolicyService.notifyTargets(serviceName, message)
             finished = true
-            println("TimerTask $serviceName finished")
+            logger.info("TimerTask $serviceName finished")
         }
 
         override fun equals(other: Any?) = other != null && other is MonitoredServiceTimer && other.serviceName == serviceName
@@ -51,7 +53,5 @@ class TimerEvent {
             result = 31 * result + message.hashCode()
             return result
         }
-
     }
 }
-

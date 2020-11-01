@@ -9,7 +9,7 @@ import java.time.LocalDateTime
 open class UseCaseBase: TargetBase() {
 
     protected val SERVICE_NAME1 = "Service1"
-    protected val SERVICE_NAME1_MESSAGE = "dysfunction in  Service1"
+    protected val SERVICE_NAME1_MESSAGE = "dysfunction in Service1"
     protected val SERVICE_NAME2 = "Service2"
     protected val SERVICE_NAME2_MESSAGE = "dysfunction in Service2"
     protected val SERVICE_NAME3 = "Service3"
@@ -22,6 +22,11 @@ open class UseCaseBase: TargetBase() {
                 message = SERVICE_NAME1_MESSAGE,
         alertType = AlertType.INCIDENT,
         startDateTime = START_DATE)
+
+    protected fun createAlert1Ack() = Alert(serviceName = SERVICE_NAME1,
+            message = SERVICE_NAME1_MESSAGE,
+            alertType = AlertType.ACKNOWLEDGE,
+            startDateTime = START_DATE)
 
     protected fun createMonitoredServiceList() = listOf(
             MonitoredService(serviceName = SERVICE_NAME1, healthy = true, levels = createLevels1()),

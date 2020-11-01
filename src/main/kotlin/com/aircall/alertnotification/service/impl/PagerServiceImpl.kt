@@ -6,10 +6,7 @@ import com.aircall.alertnotification.persistence.AlertRepository
 import com.aircall.alertnotification.service.EscalationPolicyService
 import com.aircall.alertnotification.service.PagerService
 import org.springframework.stereotype.Service
-import java.lang.Exception
-import java.lang.UnsupportedOperationException
 import java.time.LocalDateTime
-import kotlin.jvm.Throws
 
 @Service
 class PagerServiceImpl(private val escalationPolicyService: EscalationPolicyService,

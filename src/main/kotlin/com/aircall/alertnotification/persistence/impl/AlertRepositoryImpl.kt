@@ -10,7 +10,7 @@ class AlertRepositoryImpl : AlertRepository {
     var alertList: MutableList<Alert> = ArrayList()
 
     override fun addAlert(alert: Alert): Boolean {
-        if(findAlert(alert.serviceName) != null) {
+        if(findAlert(alert.serviceName) == null) {
             alertList.add(alert)
             return true
         }

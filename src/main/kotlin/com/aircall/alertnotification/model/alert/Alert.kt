@@ -1,4 +1,4 @@
-package com.aircall.alertnotification.model
+package com.aircall.alertnotification.model.alert
 
 import com.aircall.alertnotification.model.types.AlertType
 import java.time.LocalDateTime
@@ -6,5 +6,12 @@ import java.time.LocalDateTime
 class Alert(val serviceName: String, val message: String, var alertType: AlertType, val startDateTime: LocalDateTime, var updateDateTime: LocalDateTime) {
 
     override fun equals(other: Any?) = other != null && other is Alert && other.serviceName == serviceName
+
+    override fun hashCode(): Int {
+        var result = serviceName.hashCode()
+        result = 31 * result + message.hashCode()
+        result = 31 * result + alertType.hashCode()
+        return result
+    }
 
 }

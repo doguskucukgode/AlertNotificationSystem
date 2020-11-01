@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 
 @Service
-class AlertServiceImpl(@Qualifier("alertAdapterImpl") private val alertAdapter: AlertAdapter,
-                       @Qualifier("pagerServiceImpl") private val pagerService: PagerService) : AlertService {
+class AlertServiceImpl(private val alertAdapter: AlertAdapter,
+                       private val pagerService: PagerService) : AlertService {
 
     override fun receiveAlert() {
         val alert = alertAdapter.receiveAlert()

@@ -1,10 +1,10 @@
 package com.aircall.alertnotification.persistence.impl
 
-import com.aircall.alertnotification.model.Alert
+import com.aircall.alertnotification.model.alert.Alert
 import com.aircall.alertnotification.persistence.AlertRepository
-import org.springframework.stereotype.Service
+import org.springframework.stereotype.Component
 
-@Service
+@Component
 class AlertRepositoryImpl : AlertRepository {
 
     var alertList: MutableList<Alert> = ArrayList()

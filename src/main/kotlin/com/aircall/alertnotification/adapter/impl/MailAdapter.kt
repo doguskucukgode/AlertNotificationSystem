@@ -8,6 +8,6 @@ import org.springframework.stereotype.Component
 class MailAdapter : TargetAdapter {
 
     override fun sendAlert(message: String, target: Target) {
-        println("Sending $message to ${target.getContact()}")
+        TODO("Not yet implemented")
     }
 }

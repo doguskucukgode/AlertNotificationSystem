@@ -1,6 +1,6 @@
 package com.aircall.alertnotification.service
 
-import com.aircall.alertnotification.model.Alert
+import com.aircall.alertnotification.model.alert.Alert
 
 interface PagerService {
 

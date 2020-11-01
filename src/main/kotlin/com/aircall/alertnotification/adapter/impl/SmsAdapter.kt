@@ -8,6 +8,6 @@ import org.springframework.stereotype.Component
 class SmsAdapter : TargetAdapter {
 
     override fun sendAlert(message: String, target: Target) {
-        println("Sending Sms $message to ${target.getContact()}")
+        TODO("Not yet implemented")
     }
 }

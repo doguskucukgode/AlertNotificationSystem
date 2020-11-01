@@ -1,7 +1,7 @@
 package com.aircall.alertnotification.adapter.impl
 
 import com.aircall.alertnotification.adapter.AlertAdapter
-import com.aircall.alertnotification.model.Alert
+import com.aircall.alertnotification.model.alert.Alert
 import org.springframework.stereotype.Component
 
 @Component

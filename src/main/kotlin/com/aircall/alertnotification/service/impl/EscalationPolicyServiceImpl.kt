@@ -11,8 +11,8 @@ import kotlin.concurrent.timer
 
 @Service
 class EscalationPolicyServiceImpl(private val monitoredServiceRepository: MonitoredServiceRepository,
-                                  private val mailAdapter: TargetAdapter,
-                                  private val smsAdapter: TargetAdapter,
+                                  var mailAdapter: TargetAdapter,
+                                  var smsAdapter: TargetAdapter,
                                   private val timerService: TimerService) : EscalationPolicyService {
 
     override fun notifyTargets(serviceName: String, message: String) {
@@ -22,19 +22,25 @@ class EscalationPolicyServiceImpl(private val monitoredServiceRepository: Monito
             if (nextLevel != null) {
                 // send notifications
                 nextLevel.targets.forEach { t ->
-                    if (t is Sms) {
+                    if (t is Email) {
                         mailAdapter.sendAlert(message, t)
-                    } else if (t is Email) {
+                    } else if (t is Sms) {
                         smsAdapter.sendAlert(message, t)
                     }
                 }
                 // set timer
                 timerService.scheduleTimer(serviceName, message, this)
-                // set current level
-                monitoredService.incrementCurrentLevel()
-                monitoredService.makeUnhealthy()
-                monitoredServiceRepository.saveMonitoredService(monitoredService)
             }
+        }
+    }
+
+    override fun incrementMonitoredService(serviceName: String) {
+        val monitoredService = monitoredServiceRepository.findMonitoredService(serviceName)
+        if(monitoredService != null) {
+            // set current level
+            monitoredService.incrementCurrentLevel()
+            monitoredService.makeUnhealthy()
+            monitoredServiceRepository.saveMonitoredService(monitoredService)
         }
     }
 

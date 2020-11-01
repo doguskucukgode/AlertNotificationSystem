@@ -1,36 +1,69 @@
 package com.aircall.alertnnotification
 
-import com.aircall.alertnotification.async.Producer
+import com.aircall.alertnotification.AlertNotificationApplication
+import com.aircall.alertnotification.adapter.AlertAdapter
+import com.aircall.alertnotification.adapter.TargetAdapter
+import com.aircall.alertnotification.persistence.AlertRepository
+import com.aircall.alertnotification.persistence.MonitoredServiceRepository
+import com.aircall.alertnotification.service.*
+import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
+import org.junit.jupiter.api.assertAll
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.junit.jupiter.SpringExtension
-import kotlin.jvm.Throws
 
 
-@ExtendWith(SpringExtension::class)
-@SpringBootTest(classes = [AlertNotificationApplicationTests::class])
+@SpringBootTest(classes = [AlertNotificationApplication::class])
 class AlertNotificationApplicationTests {
 
+    @Autowired
+    protected lateinit var alertAdapter: AlertAdapter
 
     @Autowired
-    private lateinit var producer: Producer
+    protected lateinit var escalationPolicyService: EscalationPolicyService
 
-    //@Test
-    fun contextLoads() {
-    }
+    @Autowired
+    protected lateinit var pagerService: PagerService
 
+    @Autowired
+    protected lateinit var timerService: TimerService
+
+    @Autowired
+    protected lateinit var alertService: AlertService
+
+    @Autowired
+    protected lateinit var mailService: TargetService
+
+    @Autowired
+    protected lateinit var smsService: TargetService
+
+    @Autowired
+    protected lateinit var alertRepository: AlertRepository
+
+    @Autowired
+    protected lateinit var monitoredServiceRepository: MonitoredServiceRepository
+
+    @Autowired
+    protected lateinit var mailAdapter: TargetAdapter
+
+    @Autowired
+    protected lateinit var smsAdapter: TargetAdapter
 
     @Test
-    @Throws(InterruptedException::class)
-    fun createEvent() {
-        producer.create("foo")
-
-        producer.asyncMethod();
-
-        // A chance to see the logging messages before the JVM exists.
-        Thread.sleep(2000)
+    fun contextLoads() {
+        assertAll("Context",
+                { Assertions.assertThat(alertAdapter).isNotNull},
+                { Assertions.assertThat(escalationPolicyService).isNotNull},
+                { Assertions.assertThat(pagerService).isNotNull},
+                { Assertions.assertThat(timerService).isNotNull},
+                { Assertions.assertThat(alertService).isNotNull},
+                { Assertions.assertThat(mailService).isNotNull},
+                { Assertions.assertThat(smsService).isNotNull},
+                { Assertions.assertThat(alertRepository).isNotNull},
+                { Assertions.assertThat(monitoredServiceRepository).isNotNull},
+                { Assertions.assertThat(mailAdapter).isNotNull},
+                { Assertions.assertThat(smsAdapter).isNotNull}
+        )
     }
 
 }

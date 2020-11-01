@@ -5,13 +5,22 @@ import com.aircall.alertnotification.persistence.MonitoredServiceRepository
 import org.springframework.stereotype.Component
 
 @Component
-class MonitoredServiceRepositoryImpl: MonitoredServiceRepository {
+class MonitoredServiceRepositoryImpl : MonitoredServiceRepository {
 
-    override fun findMonitoredService(serviceName: String): MonitoredService {
-        TODO("Not yet implemented")
-    }
+    var serviceList: MutableList<MonitoredService> = ArrayList()
+
+    override fun findMonitoredService(serviceName: String): MonitoredService? =
+            serviceList.stream()
+                    .filter { a -> a.serviceName == serviceName }
+                    .findFirst()
+                    .orElse(null)
+
 
     override fun saveMonitoredService(monitoredService: MonitoredService) {
-        TODO("Not yet implemented")
+        val monitoredServiceInList = findMonitoredService(monitoredService.serviceName)
+        if (monitoredServiceInList != null) {
+            serviceList.remove(monitoredServiceInList)
+        }
+        serviceList.add(monitoredService)
     }
 }

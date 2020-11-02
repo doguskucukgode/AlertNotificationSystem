@@ -28,7 +28,7 @@ open class UseCaseBase: TargetBase() {
             alertType = AlertType.ACKNOWLEDGE,
             startDateTime = START_DATE)
 
-    protected fun createMonitoredServiceList() = listOf(
+    protected fun createMonitoredServiceList() = mutableListOf(
             MonitoredService(serviceName = SERVICE_NAME1, healthy = true, levels = createLevels1()),
             MonitoredService(serviceName = SERVICE_NAME2, healthy = true, levels = createLevels2()),
             MonitoredService(serviceName = SERVICE_NAME3, healthy = true, levels = createLevels3()),

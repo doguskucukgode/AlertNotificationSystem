@@ -60,7 +60,9 @@ class UseCases: UseCaseBase() {
         escalationPolicyService.mailAdapter = mailAdapter
         escalationPolicyService.smsAdapter = smsAdapter
         timerService.propertiesConfig = propertiesConfig
-        monitoredServiceRepository.serviceList.addAll(createMonitoredServiceList())
+        monitoredServiceRepository.serviceList = createMonitoredServiceList()
+        alertRepository.alertList.clear()
+        timerService.timerList.clear()
     }
 
     /**

@@ -15,7 +15,6 @@ class MonitoredServiceRepositoryImpl : MonitoredServiceRepository {
                     .findFirst()
                     .orElse(null)
 
-
     override fun saveMonitoredService(monitoredService: MonitoredService) {
         val monitoredServiceInList = findMonitoredService(monitoredService.serviceName)
         if (monitoredServiceInList != null) {

@@ -25,6 +25,7 @@ class EscalationPolicyServiceImpl(private val monitoredServiceRepository: Monito
                                   private val timerService: TimerService) : EscalationPolicyService {
 
     /**
+     * Notifying targets based on monitored service if unhealthy
      *
      * @param serviceName
      * @param message
@@ -49,6 +50,11 @@ class EscalationPolicyServiceImpl(private val monitoredServiceRepository: Monito
         }
     }
 
+    /**
+     * Updates monitored service unhealthy and saves in repository
+     *
+     * @param serviceName
+     */
     override fun makeMonitoredServiceUnHealthy(serviceName: String) {
         val monitoredService = monitoredServiceRepository.findMonitoredService(serviceName)
         if(monitoredService != null) {
@@ -57,6 +63,11 @@ class EscalationPolicyServiceImpl(private val monitoredServiceRepository: Monito
         }
     }
 
+    /**
+     * Triggers timer service when acknowledgement received
+     *
+     * @param serviceName
+     */
     override fun ackReceived(serviceName: String) {
         val monitoredService = monitoredServiceRepository.findMonitoredService(serviceName)
         if (monitoredService != null) {
@@ -65,6 +76,11 @@ class EscalationPolicyServiceImpl(private val monitoredServiceRepository: Monito
         }
     }
 
+    /**
+     * Updates monitored service healthy and saves in repository when healthy alert receives
+     *
+     * @param serviceName
+     */
     override fun healthyReceived(serviceName: String) {
         val monitoredService = monitoredServiceRepository.findMonitoredService(serviceName)
         if (monitoredService != null) {
@@ -73,6 +89,11 @@ class EscalationPolicyServiceImpl(private val monitoredServiceRepository: Monito
         }
     }
 
+    /**
+     * Increments monitored service current level by 1 and saves in repository
+     *
+     * @param monitoredService
+     */
     fun incrementMonitoredService(monitoredService: MonitoredService) {
         // set current level
         monitoredService.incrementCurrentLevel()

@@ -19,6 +19,11 @@ import java.time.LocalDateTime
 class PagerServiceImpl(private val escalationPolicyService: EscalationPolicyService,
                        private val alertRepository: AlertRepository) : PagerService {
 
+    /**
+     *  Identifying alerts and forwards to Escalation Policy Service
+     *
+     *  @param
+     */
     @Synchronized
     override fun receiveAlert(alert: Alert) {
         if (alert.alertType == AlertType.INCIDENT) {
@@ -42,6 +47,11 @@ class PagerServiceImpl(private val escalationPolicyService: EscalationPolicyServ
         }
     }
 
+    /**
+     * Updates alert time
+     *
+     * @param alert
+     */
     fun updateAlertTime(alert: Alert) {
         alert.updateDateTime = LocalDateTime.now()
         alertRepository.addAlert(alert)

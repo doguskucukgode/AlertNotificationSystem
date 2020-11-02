@@ -109,7 +109,7 @@ class UseCases: UseCaseBase() {
      * and sets a 15-minutes acknowledgement delay.
      */
     @Test
-    fun givenMonitoredServiceUnHealthyWhenPagersReceivesAckAlertThenServiceNotifiesNextLevel() {
+    fun givenMonitoredServiceUnHealthyWhenPagersReceivesAckTimeOutThenServiceNotifiesNextLevel() {
         // Arrange
         Mockito.`when`(alertAdapter.receiveAlert()).thenReturn(createAlert1())
         Mockito.`when`(propertiesConfig.targetLevelInterval).thenReturn(10) // set interval 10 second delay
@@ -129,7 +129,7 @@ class UseCases: UseCaseBase() {
         Mockito.verify(mailAdapter, Mockito.times(1)).sendAlert(SERVICE_NAME1_MESSAGE, EMAIL_TARGET2)
         Mockito.verify(smsAdapter, Mockito.times(1)).sendAlert(SERVICE_NAME1_MESSAGE, SMS_TARGET2)
         // Assert service is unhealthy and second timer is started
-        assertAll("givenMonitoredServiceUnHealthyWhenPagersReceivesAckAlertThenServiceNotifiesNextLevel",
+        assertAll("givenMonitoredServiceUnHealthyWhenPagersReceivesAckTimeOutAlertThenServiceNotifiesNextLevel",
                 { Assertions.assertThat(monitoredServiceInRepository).isNotNull()},
                 { Assertions.assertThat(monitoredServiceInRepository?.healthy).isFalse()},
                 { Assertions.assertThat(timerService.timerList.size).isEqualTo(1)},
@@ -137,6 +137,40 @@ class UseCases: UseCaseBase() {
                 { Assertions.assertThat(timerService.timerList[SERVICE_NAME1]?.isFinished()).isFalse()}
         )
         cancelTimers()
+    }
+
+    /**
+     * Given a Monitored Service in an Unhealthy State
+     * when the Pager receives the Acknowledgement
+     * and later receives the Acknowledgement Timeout,
+     * then the Pager doesn't notify any Target
+     * and doesn't set an acknowledgement delay.
+     */
+    @Test
+    fun givenMonitoredServiceUnHealthyWhenPagersReceivesAckAlertThenServiceNotNotifiesNextLevel() {
+        // Arrange
+        Mockito.`when`(alertAdapter.receiveAlert()).thenReturn(createAlert1())
+        Mockito.`when`(propertiesConfig.targetLevelInterval).thenReturn(15 * 60) // set interval 15 minutes delay
+        alertService.receiveAlert() //making unhealthy state with level1 targets alerted
+        Mockito.`when`(alertAdapter.receiveAlert()).thenReturn(createAlert1Ack()) // set ack alert
+
+        // Act
+        alertService.receiveAlert()
+
+        // Assert
+        val monitoredServiceInRepository = monitoredServiceRepository.findMonitoredService(SERVICE_NAME1)
+        // Assert first level targets are notified only once when becoming initial state to be unhealthy
+        Mockito.verify(mailAdapter, Mockito.times(1)).sendAlert(SERVICE_NAME1_MESSAGE, EMAIL_TARGET1)
+        Mockito.verify(smsAdapter, Mockito.times(1)).sendAlert(SERVICE_NAME1_MESSAGE, SMS_TARGET1)
+        // Assert second level targets are not notified after ack message
+        Mockito.verify(mailAdapter, Mockito.times(0)).sendAlert(SERVICE_NAME1_MESSAGE, EMAIL_TARGET2)
+        Mockito.verify(smsAdapter, Mockito.times(0)).sendAlert(SERVICE_NAME1_MESSAGE, SMS_TARGET2)
+        // Assert service is unhealthy and timer list is empty
+        assertAll("givenMonitoredServiceUnHealthyWhenPagersReceivesAckTimeOutAlertThenServiceNotifiesNextLevel",
+                { Assertions.assertThat(monitoredServiceInRepository).isNotNull()},
+                { Assertions.assertThat(monitoredServiceInRepository?.healthy).isFalse()},
+                { Assertions.assertThat(timerService.timerList.size).isEqualTo(0)},
+        )
     }
 
 

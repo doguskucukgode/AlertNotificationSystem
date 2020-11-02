@@ -8,6 +8,13 @@ import com.aircall.alertnotification.service.PagerService
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 
+/**
+ * Pager Service Implementation responsible for identifying alerts and
+ * forwarding to Escalation Policy Service
+ *
+ * @param escalationPolicyService
+ * @param alertRepository
+ */
 @Service
 class PagerServiceImpl(private val escalationPolicyService: EscalationPolicyService,
                        private val alertRepository: AlertRepository) : PagerService {

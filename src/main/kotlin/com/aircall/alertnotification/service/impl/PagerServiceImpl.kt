@@ -17,6 +17,7 @@ class PagerServiceImpl(private val escalationPolicyService: EscalationPolicyServ
         if (alert.alertType == AlertType.INCIDENT) {
             if (alertRepository.findAlert(alert.serviceName) == null) {
                 updateAlertTime(alert)
+                escalationPolicyService.makeMonitoredServiceUnHealthy(alert.serviceName)
                 escalationPolicyService.notifyTargets(alert.serviceName, alert.message)
             }
         } else if (alert.alertType == AlertType.ACKNOWLEDGE) {

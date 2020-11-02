@@ -17,7 +17,7 @@ class EscalationPolicyServiceImpl(private val monitoredServiceRepository: Monito
 
     override fun notifyTargets(serviceName: String, message: String) {
         val monitoredService = monitoredServiceRepository.findMonitoredService(serviceName)
-        if(monitoredService != null) {
+        if(monitoredService != null && !monitoredService.healthy) {
             val nextLevel = monitoredService.getNextLevel()
             if (nextLevel != null) {
                 // send notifications
@@ -35,10 +35,17 @@ class EscalationPolicyServiceImpl(private val monitoredServiceRepository: Monito
         }
     }
 
+    override fun makeMonitoredServiceUnHealthy(serviceName: String) {
+        val monitoredService = monitoredServiceRepository.findMonitoredService(serviceName)
+        if(monitoredService != null) {
+            monitoredService.makeUnhealthy()
+            monitoredServiceRepository.saveMonitoredService(monitoredService)
+        }
+    }
+
     fun incrementMonitoredService(monitoredService: MonitoredService) {
             // set current level
             monitoredService.incrementCurrentLevel()
-            monitoredService.makeUnhealthy()
             monitoredServiceRepository.saveMonitoredService(monitoredService)
     }
 
@@ -53,8 +60,6 @@ class EscalationPolicyServiceImpl(private val monitoredServiceRepository: Monito
     override fun healthyReceived(serviceName: String) {
         val monitoredService = monitoredServiceRepository.findMonitoredService(serviceName)
         if (monitoredService != null) {
-            // stop timer if there is any
-            timerService.ackReceived(serviceName)
             monitoredService.makeHealthy()
             monitoredServiceRepository.saveMonitoredService(monitoredService)
         }

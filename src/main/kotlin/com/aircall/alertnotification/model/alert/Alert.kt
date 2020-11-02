@@ -3,6 +3,15 @@ package com.aircall.alertnotification.model.alert
 import com.aircall.alertnotification.model.types.AlertType
 import java.time.LocalDateTime
 
+/**
+ * Alert model
+ *
+ * @param serviceName
+ * @param alertType
+ * @param message
+ * @param startDateTime
+ * @param updateDateTime
+ */
 class Alert(val serviceName: String, val message: String, var alertType: AlertType,
             val startDateTime: LocalDateTime, var updateDateTime: LocalDateTime? = null) {
 

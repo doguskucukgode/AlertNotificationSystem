@@ -49,7 +49,7 @@ open class UseCaseBase: TargetBase() {
 
     protected fun createMonitoredService1() =  MonitoredService(serviceName = SERVICE_NAME1,
             healthy = true, levels = createLevels1())
-    private fun createMonitoredService2() =  MonitoredService(serviceName = SERVICE_NAME2,
+    protected fun createMonitoredService2() =  MonitoredService(serviceName = SERVICE_NAME2,
             healthy = true, levels = createLevels2())
     private fun createMonitoredService3() =  MonitoredService(serviceName = SERVICE_NAME3,
             healthy = true, levels = createLevels3())

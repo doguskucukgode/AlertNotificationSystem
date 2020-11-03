@@ -42,8 +42,6 @@ class PagerServiceImpl(private val escalationPolicyService: EscalationPolicyServ
                 updateAlertTime(alert)
                 escalationPolicyService.healthyReceived(alert.serviceName)
             }
-        } else {
-            throw UnsupportedOperationException("Unknown alert type")
         }
     }
 

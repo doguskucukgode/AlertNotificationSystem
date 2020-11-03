@@ -20,7 +20,6 @@ import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import java.util.concurrent.TimeUnit
 
 @ExtendWith(MockitoExtension::class)
 @SpringBootTest(classes = [AlertNotificationApplication::class])
@@ -77,10 +76,8 @@ class UseCases: UseCaseBase() {
         // Arrange
         Mockito.`when`(alertAdapter.receiveAlert()).thenReturn(createAlert1())
         Mockito.`when`(propertiesConfig.targetLevelInterval).thenReturn(15 * 60) // set interval 15 minutes delay
-
         // Act
         alertService.receiveAlert()
-
         // Assert
         val monitoredServiceInRepository = monitoredServiceRepository.findMonitoredService(SERVICE_NAME1)
         val alertInRepository = alertRepository.findAlert(SERVICE_NAME1)
@@ -114,12 +111,10 @@ class UseCases: UseCaseBase() {
         Mockito.`when`(alertAdapter.receiveAlert()).thenReturn(createAlert1())
         Mockito.`when`(propertiesConfig.targetLevelInterval).thenReturn(10) // set interval 10 second delay
         alertService.receiveAlert()
-
         // Act (Wait 5 seconds and set interval 15 minutes not to notify 3rd level)
         Thread.sleep(5 * 1000)
         Mockito.`when`(propertiesConfig.targetLevelInterval).thenReturn(15 * 60) // set interval 15 minutes delay
         Thread.sleep(10 * 1000)
-
         // Assert
         val monitoredServiceInRepository = monitoredServiceRepository.findMonitoredService(SERVICE_NAME1)
         // Assert first level targets are notified
@@ -153,10 +148,8 @@ class UseCases: UseCaseBase() {
         Mockito.`when`(propertiesConfig.targetLevelInterval).thenReturn(15 * 60) // set interval 15 minutes delay
         alertService.receiveAlert() //making unhealthy state with level1 targets alerted
         Mockito.`when`(alertAdapter.receiveAlert()).thenReturn(createAlert1Ack()) // set ack alert
-
         // Act
         alertService.receiveAlert()
-
         // Assert
         val monitoredServiceInRepository = monitoredServiceRepository.findMonitoredService(SERVICE_NAME1)
         // Assert first level targets are notified only once when becoming initial state to be unhealthy
@@ -186,13 +179,11 @@ class UseCases: UseCaseBase() {
         Mockito.`when`(alertAdapter.receiveAlert()).thenReturn(createAlert1())
         Mockito.`when`(propertiesConfig.targetLevelInterval).thenReturn(15 * 60) // set interval 15 minutes delay
         alertService.receiveAlert() //making unhealthy state with level1 targets alerted
-
         // Act
         alertService.receiveAlert() // get same alert 4 times
         alertService.receiveAlert()
         alertService.receiveAlert()
         alertService.receiveAlert()
-
         // Assert
         val monitoredServiceInRepository = monitoredServiceRepository.findMonitoredService(SERVICE_NAME1)
         // Assert first level targets are notified only once when becoming initial state to be unhealthy
@@ -224,12 +215,10 @@ class UseCases: UseCaseBase() {
         Mockito.`when`(propertiesConfig.targetLevelInterval).thenReturn(10) // set interval 10 second delay
         alertService.receiveAlert()
         Mockito.`when`(alertAdapter.receiveAlert()).thenReturn(createAlert1Healthy())
-
         // Act (Send healthy alert and wait 15 seconds to get timeout ack)
         Thread.sleep(5 * 1000)
         alertService.receiveAlert()
         Thread.sleep(10 * 1000)
-
         // Assert
         val monitoredServiceInRepository = monitoredServiceRepository.findMonitoredService(SERVICE_NAME1)
         // Assert first level targets are notified only once when becoming initial state to be unhealthy
@@ -248,6 +237,9 @@ class UseCases: UseCaseBase() {
 
     }
 
+    /**
+     * Cancels timers
+     */
     private fun cancelTimers() {
         timerService.timerList.forEach { (_, u) -> u.cancel() }
     }

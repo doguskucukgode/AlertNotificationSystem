@@ -234,7 +234,45 @@ class UseCases: UseCaseBase() {
                 { Assertions.assertThat(monitoredServiceInRepository?.currentLevel).isEqualTo(0)},
                 { Assertions.assertThat(timerService.timerList.size).isEqualTo(0)},
         )
+    }
 
+    /**
+     * Given a Monitored Service in a Healthy State,
+     * when the Pager receives an Alert related to this Monitored Service,
+     * then the Monitored Service becomes Unhealthy,
+     * the Pager notifies all targets of the first level of the escalation policy,
+     * and sets a 15-minutes acknowledgement delay and receives the Acknowledgement Timeout
+     * the Pager notifies all targets of the second level of the escalation policy,
+     * and sets a 15-minutes acknowledgement delay and receives the Acknowledgement Timeout
+     * the Pager notifies all targets of the last level of the escalation policy,
+     * and sets a 15-minutes acknowledgement delay and receives the Acknowledgement Timeout
+     */
+    @Test
+    fun givenMonitoredServiceHealthyWhenPagersReceivesHealthyAndAckTimeoutThenServiceNotNotifiesAllLevels() {
+        // Arrange
+        Mockito.`when`(alertAdapter.receiveAlert()).thenReturn(createAlert1())
+        Mockito.`when`(propertiesConfig.targetLevelInterval).thenReturn(5) // set interval 5 second delay
+        // Act
+        alertService.receiveAlert()
+        Thread.sleep(16 * 1000)
+        // Assert
+        val monitoredServiceInRepository = monitoredServiceRepository.findMonitoredService(SERVICE_NAME1)
+        // Assert first level targets are notified
+        Mockito.verify(mailAdapter, Mockito.times(1)).sendAlert(SERVICE_NAME1_MESSAGE, EMAIL_TARGET1)
+        Mockito.verify(smsAdapter, Mockito.times(1)).sendAlert(SERVICE_NAME1_MESSAGE, SMS_TARGET1)
+        // Assert second level targets are not notified after timeout
+        Mockito.verify(mailAdapter, Mockito.times(1)).sendAlert(SERVICE_NAME1_MESSAGE, EMAIL_TARGET2)
+        Mockito.verify(smsAdapter, Mockito.times(1)).sendAlert(SERVICE_NAME1_MESSAGE, SMS_TARGET2)
+        // Assert third level targets are not notified after timeout
+        Mockito.verify(mailAdapter, Mockito.times(1)).sendAlert(SERVICE_NAME1_MESSAGE, EMAIL_TARGET3)
+        Mockito.verify(smsAdapter, Mockito.times(1)).sendAlert(SERVICE_NAME1_MESSAGE, SMS_TARGET3)
+        // Assert service is healthy and timer is running alert is ignored
+        assertAll("givenMonitoredServiceHealthyWhenPagersReceivesHealthyAndAckTimeoutThenServiceNotNotifiesAllLevels",
+                { Assertions.assertThat(monitoredServiceInRepository).isNotNull()},
+                { Assertions.assertThat(monitoredServiceInRepository?.healthy).isFalse()},
+                { Assertions.assertThat(monitoredServiceInRepository?.currentLevel).isEqualTo(3)},
+                { Assertions.assertThat(timerService.timerList.size).isEqualTo(0)},
+        )
     }
 
     /**
